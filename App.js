@@ -16,10 +16,8 @@ app.use(bodyParser.json());
 // API Routes
 app.use('/api', apiRoutes);
 
-app.get("/", (req, res) => {
-  res.json({
-      message: "Hello World"
-  });
+app.get("/health", (req, res) => {
+  res.send('ok')
 });
 
 // Custom Error Handling Middleware
