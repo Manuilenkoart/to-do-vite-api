@@ -17,7 +17,7 @@ function handleSchemaValidationError(error) {
 
 const getAllTodosDb = async () => {
   try {
-    return await TodoModel.find().limit(20).sort({ countId: -1 });
+    return await TodoModel.find().select('-_id');
   } catch (error) {
     handleDatabaseError(error);
   }
@@ -25,8 +25,9 @@ const getAllTodosDb = async () => {
 
 const createTodoDb = async (newTodo) => {
   try {
-    const todo = new TodoModel(newTodo);
-    return await todo.save();
+    const createdTodo = await new TodoModel(newTodo).save();
+    const { _id, ...todo } = createdTodo.toObject();
+    return todo;
   } catch (error) {
     if (error.name === 'ValidationError') {
       return handleSchemaValidationError(error);
@@ -41,7 +42,7 @@ const updateTodoDb = async (id, todo) => {
     const updatedTodo = await TodoModel.findOneAndUpdate({ id }, todo, {
       new: true,
       runValidators: true
-    });
+    }).select('-_id');
     if (!updatedTodo) {
       console.warn('Todo not found');
     }
@@ -53,7 +54,7 @@ const updateTodoDb = async (id, todo) => {
 
 const deleteTodoDb = async (todoId) => {
   try {
-    const todo = await TodoModel.findOneAndDelete({ id: todoId });
+    const todo = await TodoModel.findOneAndDelete({ id: todoId }).select('-_id');
     if (!todo) {
       console.warn('deleteTodoDb: Todo not found');
     }
@@ -65,7 +66,7 @@ const deleteTodoDb = async (todoId) => {
 
 const getTodoByIdDB = async (id) => {
   try {
-    const todo = await TodoModel.findById(id);
+    const todo = await TodoModel.findById(id).select('-_id');
     if (!todo) {
       console.warn('Todo not found');
     }
