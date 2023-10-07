@@ -9,10 +9,9 @@ function handleSchemaValidationError(error) {
   const validationErrors = Object.keys(error.errors).map((field) => error.errors[field].message);
 
   return {
-    status: 400,
-    error: 'Validation Error',
+    status: 409,
+    error: validationErrors.join(''),
     message: 'Invalid data provided',
-    validationErrors,
   };
 }
 
@@ -37,13 +36,14 @@ const createTodoDb = async (newTodo) => {
   }
 };
 
-const updateTodoDb = async (id, parameter) => {
+const updateTodoDb = async (id, todo) => {
   try {
-    const updatedTodo = await TodoModel.findByIdAndUpdate(id, parameter, {
+    const updatedTodo = await TodoModel.findOneAndUpdate({ id }, todo, {
       new: true,
+      runValidators: true
     });
     if (!updatedTodo) {
-      throw new Error('Todo not found');
+      console.warn('Todo not found');
     }
     return updatedTodo;
   } catch (error) {
@@ -53,9 +53,9 @@ const updateTodoDb = async (id, parameter) => {
 
 const deleteTodoDb = async (todoId) => {
   try {
-    const todo = await TodoModel.findByIdAndDelete(todoId);
+    const todo = await TodoModel.findOneAndDelete({ id: todoId });
     if (!todo) {
-      throw new Error('Todo not found');
+      console.warn('deleteTodoDb: Todo not found');
     }
     return todo;
   } catch (error) {
@@ -67,7 +67,7 @@ const getTodoByIdDB = async (id) => {
   try {
     const todo = await TodoModel.findById(id);
     if (!todo) {
-      throw new Error('Todo not found');
+      console.warn('Todo not found');
     }
     return todo;
   } catch (error) {

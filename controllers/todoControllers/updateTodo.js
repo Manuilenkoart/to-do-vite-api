@@ -1,15 +1,15 @@
-const { updateTodoDb } = require('../../db/actions/todoActions');
+const { updateTodoDb } = require('../../db');
 
 const updateTodo = async (req, res) => {
-  const { data } = req.body;
+  const { id, ...todoFields } = req.body;
 
   try {
-    const updatedTodo = await updateTodoDb(data._id, data);
+    const updatedTodo = await updateTodoDb(id, todoFields);
 
     if (updatedTodo) {
       res.status(200).json(updatedTodo);
     } else {
-      res.status(500).send('Server error');
+      res.status(404).json({ error: 'Todo not found' });
     }
   } catch (error) {
     console.error('Error while updating a todo:', error.message);

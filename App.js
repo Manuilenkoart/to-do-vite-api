@@ -3,7 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const { PORT } = require('./config');
-const connectToMongoDB = require('./db/mongoConnect');
+const { connectToMongoDB } = require('./db');
 const apiRoutes = require('./routes/apiRoutes/apiRoutes');
 
 const app = express();
@@ -15,10 +15,6 @@ app.use(bodyParser.json());
 
 // API Routes
 app.use('/api', apiRoutes);
-
-app.get("/health", (req, res) => {
-  res.send('ok')
-});
 
 // Custom Error Handling Middleware
 app.use((err, _req, res, _next) => {
