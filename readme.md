@@ -26,7 +26,8 @@
 
 ```
 type Todo = {
-_id: string;
+id: string;
+title: string;
 text: string;
 }
 ```
